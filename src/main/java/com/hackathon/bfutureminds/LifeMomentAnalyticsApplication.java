@@ -1,3 +1,6 @@
+package com.hackathon.bfutureminds;
+
+import com.hackathon.bfutureminds.LifeMomentAnalyticsRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;

@@ -1,4 +1,5 @@
-import configuration.LifeMomentAnalyticsConfig;
+package com.hackathon.bfutureminds;
+
 import org.springframework.batch.core.*;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
@@ -7,12 +8,9 @@ import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
-
-import java.io.File;
 
 /**
  * Created by chand on 11/6/16.

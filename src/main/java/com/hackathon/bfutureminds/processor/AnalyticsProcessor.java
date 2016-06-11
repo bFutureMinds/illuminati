@@ -1,7 +1,6 @@
-package processor;
+package com.hackathon.bfutureminds.processor;
 
-import model.Customer;
-import model.CustomerProspect;
+import com.hackathon.bfutureminds.model.Customer;
 import org.springframework.batch.item.ItemProcessor;
 
 /**

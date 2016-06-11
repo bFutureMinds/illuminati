@@ -1,4 +1,4 @@
-package model;
+package com.hackathon.bfutureminds.model;
 
 /**
  * Created by sbanga 11/6/16.
