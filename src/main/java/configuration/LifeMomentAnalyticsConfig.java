@@ -1,5 +1,6 @@
 package configuration;
 
+import model.CsvContract;
 import model.Customer;
 import model.CustomerProspect;
 import org.springframework.batch.core.Job;
@@ -30,13 +31,15 @@ import processor.AnalyticsProcessor;
 @EnableBatchProcessing
 public class LifeMomentAnalyticsConfig {
 
+
+    //Input File Reader Configuration
     @Bean
     public ItemReader<Customer> reader() {
         FlatFileItemReader<Customer> reader = new FlatFileItemReader<Customer>();
         reader.setResource(new ClassPathResource("student-data.csv"));
         reader.setLineMapper(new DefaultLineMapper<Customer>() {{
             setLineTokenizer(new DelimitedLineTokenizer() {{
-                setNames(new String[]{"stdId", "subMarkOne", "subMarkTwo"});
+                setNames(CsvContract.PROJECTION);
             }});
             setFieldSetMapper(new BeanWrapperFieldSetMapper<Customer>() {{
                 setTargetType(Customer.class);
@@ -44,6 +47,8 @@ public class LifeMomentAnalyticsConfig {
         }});
         return reader;
     }
+
+    //Output File Writer Configuration
     @Bean
     public ItemWriter<CustomerProspect> writer() {
         FlatFileItemWriter<CustomerProspect> writer = new FlatFileItemWriter<>();
@@ -56,6 +61,8 @@ public class LifeMomentAnalyticsConfig {
         writer.setLineAggregator(delLineAgg);
         return writer;
     }
+
+    //Analytics Processor Configuration
     @Bean
     public ItemProcessor<Customer, CustomerProspect> processor() {
         return new AnalyticsProcessor();
