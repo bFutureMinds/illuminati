@@ -32,16 +32,15 @@ public class LifeMomentAnalyticsRunner implements ApplicationContextAware{
 
     public void runJob(){
 
-        File inputFile = new File("/home/shikha/Desktop/HackathonExcelModelInput.csv");
         JobLauncher jobLauncher = (JobLauncher) applicationContext.getBean("jobLauncher");
-        Job job = applicationContext.getBean("",Job.class);
+        Job job = applicationContext.getBean("createCustomerProspectJob",Job.class);
 
         JobParametersBuilder builder = new JobParametersBuilder();
 
-        runJobForFile(jobLauncher,job,inputFile,builder);
+        runJobForFile(jobLauncher,job,builder);
     }
 
-    private void runJobForFile(JobLauncher jobLauncher, Job job, File inputFile, JobParametersBuilder jobParametersBuilder)  {
+    private void runJobForFile(JobLauncher jobLauncher, Job job, JobParametersBuilder jobParametersBuilder)  {
         try{
             JobExecution run = jobLauncher.run(job, jobParametersBuilder.toJobParameters());
             ExitStatus exitStatus = run.getExitStatus();

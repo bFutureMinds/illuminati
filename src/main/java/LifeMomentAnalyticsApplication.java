@@ -9,6 +9,7 @@ public class LifeMomentAnalyticsApplication {
 
     public static void main(String[] args){
 
+
         SpringApplicationBuilder springApplicationBuilder = new SpringApplicationBuilder(LifeMomentAnalyticsRunner.class);
         springApplicationBuilder.web(false);
 
