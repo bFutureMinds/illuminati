@@ -19,12 +19,15 @@ import org.springframework.batch.item.file.mapping.DefaultLineMapper;
 import org.springframework.batch.item.file.transform.BeanWrapperFieldExtractor;
 import org.springframework.batch.item.file.transform.DelimitedLineAggregator;
 import org.springframework.batch.item.file.transform.DelimitedLineTokenizer;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.FileSystemResource;
 import processor.AnalyticsProcessor;
 import tasklet.CalculationTasklet;
 import tasklet.LoyalFilterTasklet;
+
+import java.io.File;
 
 /**
  * Created by chand on 11/6/16.
@@ -33,12 +36,19 @@ import tasklet.LoyalFilterTasklet;
 @EnableBatchProcessing
 public class LifeMomentAnalyticsConfig {
 
+    @Value("${inFile}")
+    String inputFilePath;
+
+
+    @Value("${outFile}")
+    String outputFilePath;
+
 
     //Input File Reader Configuration
     @Bean
     public ItemReader<Customer> reader() {
         FlatFileItemReader<Customer> reader = new FlatFileItemReader<Customer>();
-        reader.setResource(new ClassPathResource("student-data.csv"));
+        reader.setResource(new FileSystemResource(new File(inputFilePath)));
         reader.setLineMapper(new DefaultLineMapper<Customer>() {{
             setLineTokenizer(new DelimitedLineTokenizer() {{
                 setNames(CsvContract.PROJECTION);
@@ -54,11 +64,11 @@ public class LifeMomentAnalyticsConfig {
     @Bean
     public ItemWriter<CustomerProspect> writer() {
         FlatFileItemWriter<CustomerProspect> writer = new FlatFileItemWriter<>();
-        writer.setResource(new ClassPathResource("student-marksheet.csv"));
+        writer.setResource(new FileSystemResource(new File(outputFilePath)));
         DelimitedLineAggregator<CustomerProspect> delLineAgg = new DelimitedLineAggregator<>();
         delLineAgg.setDelimiter(",");
         BeanWrapperFieldExtractor<CustomerProspect> fieldExtractor = new BeanWrapperFieldExtractor<>();
-        fieldExtractor.setNames(new String[] {"stdId", "totalSubMark"});
+        fieldExtractor.setNames(CsvContract.PROJECTION);
         delLineAgg.setFieldExtractor(fieldExtractor);
         writer.setLineAggregator(delLineAgg);
         return writer;
@@ -66,9 +76,11 @@ public class LifeMomentAnalyticsConfig {
 
     //Analytics Processor Configuration
     @Bean
-    public ItemProcessor<Customer, CustomerProspect> processor() {
-        return new AnalyticsProcessor();
+    public ItemProcessor<Customer, Customer> processor() {
+        return null;
     }
+
+    //Job Configuration
     @Bean
     public Job createCustomerProspect(JobBuilderFactory jobs, Step csvReadStep) {
         return jobs.get("createCustomerProspect")
@@ -77,6 +89,7 @@ public class LifeMomentAnalyticsConfig {
                 .build();
     }
 
+    //Step Configuration
     @Bean
     public Step minMaxCalculationStep(StepBuilderFactory stepBuilderFactory, Tasklet calculationTasklet) {
         return stepBuilderFactory.get("minMaxCalculationStep")
