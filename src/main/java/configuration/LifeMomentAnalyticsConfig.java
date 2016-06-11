@@ -1,5 +1,6 @@
 package configuration;
 
+import model.CsvContract;
 import model.Customer;
 import model.CustomerProspect;
 import org.springframework.batch.core.Job;
@@ -7,6 +8,7 @@ import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
+import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
@@ -21,6 +23,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 import processor.AnalyticsProcessor;
+import tasklet.CalculationTasklet;
+import tasklet.LoyalFilterTasklet;
 
 /**
  * Created by chand on 11/6/16.
@@ -29,13 +33,15 @@ import processor.AnalyticsProcessor;
 @EnableBatchProcessing
 public class LifeMomentAnalyticsConfig {
 
+
+    //Input File Reader Configuration
     @Bean
     public ItemReader<Customer> reader() {
         FlatFileItemReader<Customer> reader = new FlatFileItemReader<Customer>();
         reader.setResource(new ClassPathResource("student-data.csv"));
         reader.setLineMapper(new DefaultLineMapper<Customer>() {{
             setLineTokenizer(new DelimitedLineTokenizer() {{
-                setNames(new String[]{"stdId", "subMarkOne", "subMarkTwo"});
+                setNames(CsvContract.PROJECTION);
             }});
             setFieldSetMapper(new BeanWrapperFieldSetMapper<Customer>() {{
                 setTargetType(Customer.class);
@@ -43,6 +49,8 @@ public class LifeMomentAnalyticsConfig {
         }});
         return reader;
     }
+
+    //Output File Writer Configuration
     @Bean
     public ItemWriter<CustomerProspect> writer() {
         FlatFileItemWriter<CustomerProspect> writer = new FlatFileItemWriter<>();
@@ -55,26 +63,41 @@ public class LifeMomentAnalyticsConfig {
         writer.setLineAggregator(delLineAgg);
         return writer;
     }
+
+    //Analytics Processor Configuration
     @Bean
     public ItemProcessor<Customer, CustomerProspect> processor() {
         return new AnalyticsProcessor();
     }
     @Bean
-    public Job createCustomerProspect(JobBuilderFactory jobs, Step step) {
+    public Job createCustomerProspect(JobBuilderFactory jobs, Step csvReadStep) {
         return jobs.get("createCustomerProspect")
-                .flow(step)
+                .flow(csvReadStep)
                 .end()
                 .build();
     }
 
     @Bean
-    public Step step(StepBuilderFactory stepBuilderFactory, ItemReader<Customer> reader,
-                     ItemWriter<CustomerProspect> writer, ItemProcessor<Customer, CustomerProspect> processor) {
-        return stepBuilderFactory.get("step")
-                .<Customer, CustomerProspect> chunk(100)
-                .reader(reader)
-                .processor(processor)
-                .writer(writer)
+    public Step minMaxCalculationStep(StepBuilderFactory stepBuilderFactory, Tasklet calculationTasklet) {
+        return stepBuilderFactory.get("minMaxCalculationStep")
+                .tasklet(calculationTasklet)
                 .build();
+    }
+
+    @Bean
+    public Tasklet calculationTasklet() {
+        return new CalculationTasklet();
+    }
+
+    @Bean
+    public Step analyticsStep(StepBuilderFactory stepBuilderFactory, Tasklet analyticsTasklet) {
+        return stepBuilderFactory.get("analyticsStep")
+                .tasklet(analyticsTasklet)
+                .build();
+    }
+
+    @Bean
+    public Tasklet analyticsTasklet() {
+        return new LoyalFilterTasklet();
     }
 }
