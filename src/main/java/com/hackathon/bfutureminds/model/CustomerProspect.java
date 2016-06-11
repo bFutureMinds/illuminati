@@ -4,4 +4,51 @@ package com.hackathon.bfutureminds.model;
  * Created by chand on 11/6/16.
  */
 public class CustomerProspect {
+
+    public String id;
+    public String customerId;
+    public int age;
+    boolean loyaltyStatus;
+    boolean prospectStatus;
+
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getCustomerId() {
+        return customerId;
+    }
+
+    public void setCustomerId(String customerId) {
+        this.customerId = customerId;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
+    }
+
+    public boolean isLoyaltyStatus() {
+        return loyaltyStatus;
+    }
+
+    public void setLoyaltyStatus(boolean loyaltyStatus) {
+        this.loyaltyStatus = loyaltyStatus;
+    }
+
+    public boolean isProspectStatus() {
+        return prospectStatus;
+    }
+
+    public void setProspectStatus(boolean prospectStatus) {
+        this.prospectStatus = prospectStatus;
+    }
 }

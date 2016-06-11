@@ -31,7 +31,7 @@ public class LifeMomentAnalyticsRunner implements ApplicationContextAware{
     public void runJob(){
 
         JobLauncher jobLauncher = (JobLauncher) applicationContext.getBean("jobLauncher");
-        Job job = applicationContext.getBean("createCustomerProspectJob",Job.class);
+        Job job = applicationContext.getBean("createCustomerProspect",Job.class);
 
         JobParametersBuilder builder = new JobParametersBuilder();
 
