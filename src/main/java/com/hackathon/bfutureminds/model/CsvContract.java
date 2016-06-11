@@ -153,7 +153,7 @@ public class CsvContract {
     private static final String FIRSTCARLOANBANK = "firstCarLoanBank";
     private static final String AGEFIRSTCARLOANBANK = "ageFirstCarLoanBank";
     private static final String MOSTRECENTCARLOANBANK = "mostRecentCarLoanBank";
-    private static final String CARLANLAST1MTO3MBANK = "carLanLast1Mto3MBank";
+    private static final String CARLANLAST1MTO3MBANK = "carLoanLast1Mto3MBank";
     private static final String CARLOANLAST3MTO6MBANK = "carLoanLast3Mto6MBank";
     private static final String CARLOANLAST6MTO12MBANK = "carLoanLast6Mto12MBank";
     private static final String MAXINTERESTCARLOANBANK = "maxInterestCarLoanBank";

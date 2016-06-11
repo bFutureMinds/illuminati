@@ -8,6 +8,7 @@ import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
+import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
@@ -22,7 +23,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.FileSystemResource;
-import com.hackathon.bfutureminds.processor.AnalyticsProcessor;
+import tasklet.CalculationTasklet;
+import tasklet.LoyalFilterTasklet;
 
 import java.io.File;
 
@@ -74,27 +76,40 @@ public class LifeMomentAnalyticsConfig {
     //Analytics Processor Configuration
     @Bean
     public ItemProcessor<Customer, Customer> processor() {
-        return new AnalyticsProcessor();
+        return null;
     }
 
     //Job Configuration
     @Bean
-    public Job createCustomerProspectJob(JobBuilderFactory jobs, Step step) {
-        return jobs.get("createCustomerProspectJob")
-                .flow(step)
+    public Job createCustomerProspect(JobBuilderFactory jobs, Step csvReadStep) {
+        return jobs.get("createCustomerProspect")
+                .flow(csvReadStep)
                 .end()
                 .build();
     }
 
     //Step Configuration
     @Bean
-    public Step step(StepBuilderFactory stepBuilderFactory, ItemReader<Customer> reader,
-                     ItemWriter<Customer> writer, ItemProcessor<Customer, Customer> processor) {
-        return stepBuilderFactory.get("step")
-                .<Customer, Customer> chunk(100)
-                .reader(reader)
-                .processor(processor)
-                .writer(writer)
+    public Step minMaxCalculationStep(StepBuilderFactory stepBuilderFactory, Tasklet calculationTasklet) {
+        return stepBuilderFactory.get("minMaxCalculationStep")
+                .tasklet(calculationTasklet)
                 .build();
+    }
+
+    @Bean
+    public Tasklet calculationTasklet() {
+        return new CalculationTasklet();
+    }
+
+    @Bean
+    public Step analyticsStep(StepBuilderFactory stepBuilderFactory, Tasklet analyticsTasklet) {
+        return stepBuilderFactory.get("analyticsStep")
+                .tasklet(analyticsTasklet)
+                .build();
+    }
+
+    @Bean
+    public Tasklet analyticsTasklet() {
+        return new LoyalFilterTasklet();
     }
 }
