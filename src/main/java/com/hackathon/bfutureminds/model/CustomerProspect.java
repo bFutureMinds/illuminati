@@ -11,6 +11,18 @@ public class CustomerProspect {
     boolean loyaltyStatus;
     boolean prospectStatus;
 
+    public boolean eligibilityForPersonalLoan;
+    public Integer numberOfPersonalLoansToBeOffered;
+    public Double amountOfPersonalLoansToBeOffered;
+
+    public boolean eligibilityForEducationLoan;
+    public Double amountOfEducationLoansToBeOffered;
+
+    public boolean eligibilityForHomeLoan;
+    public Double amountOfHomeLoansToBeOffered;
+
+    public boolean eligibilityForSavingsAccount;
+
 
     public String getId() {
         return id;
